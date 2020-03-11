@@ -79,6 +79,16 @@ public class MastertechExceptionHandler extends ResponseEntityExceptionHandler{
 		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
 	
+	@ExceptionHandler({FaturaInexistenteException.class})
+	public ResponseEntity<Object> handleEmptyResultDataAccessException(FaturaInexistenteException ex, WebRequest request){
+		
+		List<Error> erros = new ArrayList<Error>();
+		
+		erros.add(new Error(ex.getMensagem()));
+		
+		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	}
+	
 	private List<Error> getErrorList(BindingResult bindingResult){
 		
 		List<Error> erros = new ArrayList<Error>();
