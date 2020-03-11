@@ -5,9 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import br.com.mastertech.pagamento.client.CartaoClient;
-import br.com.mastertech.pagamento.converter.PagamentoConverter;
 import br.com.mastertech.pagamento.dto.CartaoDTO;
-import br.com.mastertech.pagamento.dto.PagamentoDTO;
 import br.com.mastertech.pagamento.entity.PagamentoEntity;
 import br.com.mastertech.pagamento.exception.CartaoInativoException;
 import br.com.mastertech.pagamento.exception.CartaoNaoExisteException;
@@ -18,19 +16,17 @@ import feign.FeignException;
 public class PagamentoService {
 
 	private PagamentoRepository repository;
-	private PagamentoConverter converter;
-	private CartaoClient cartaoClient;
+	private CartaoClient client;
 
-	public PagamentoService (PagamentoRepository repository, PagamentoConverter converter,CartaoClient cartaoClient ) {
+	public PagamentoService (PagamentoRepository repository,CartaoClient client ) {
 		this.repository = repository;
-		this.converter = converter;
-		this.cartaoClient = cartaoClient;
+		this.client = client;
 	}
 
-	public PagamentoEntity criarPagamento (PagamentoDTO pagamento) throws CartaoNaoExisteException, CartaoInativoException {
+	public PagamentoEntity criarPagamento (PagamentoEntity pagamento) throws CartaoNaoExisteException, CartaoInativoException {
 		CartaoDTO cartaoDTO = null;
 		try {
-			cartaoDTO = cartaoClient.obterCartaoPorId(pagamento.getCartaoId());
+			cartaoDTO = client.obterCartaoPorId(pagamento.getCartaoId());
 		}catch(FeignException.FeignServerException.BadRequest e) {
 			throw new CartaoNaoExisteException("Escolha um cartão existente");
 		}
@@ -38,9 +34,9 @@ public class PagamentoService {
 			throw new CartaoInativoException("Favor escolher um cartão ativo");
 		}
 		pagamento.setCartaoId(cartaoDTO.getId());
-		PagamentoEntity pagamentoEntity = converter.convertFromDtoToEntity(pagamento);
+		
 
-		return repository.save(pagamentoEntity);
+		return repository.save(pagamento);
 
 	}
 

@@ -35,8 +35,9 @@ public class PagamentoController {
 
 	@PostMapping
 	public ResponseEntity<PagamentoDTO> criarPagamento (@Valid @RequestBody PagamentoDTO pagamento) throws CartaoNaoExisteException, CartaoInativoException {
+		PagamentoEntity pagamentoEntity = converter.convertFromDtoToEntity(pagamento);
 		
-		PagamentoEntity pagamentoEntity = service.criarPagamento(pagamento);
+		pagamentoEntity = service.criarPagamento(pagamentoEntity);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(converter.convertFromEntityToDto(pagamentoEntity));
 		

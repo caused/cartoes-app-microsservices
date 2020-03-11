@@ -9,6 +9,6 @@ import br.com.mastertech.pagamento.dto.CartaoDTO;
 @FeignClient(name = "cartao-service")
 public interface CartaoClient {
 
-	@GetMapping("/obter/{id}")
+	@GetMapping("/cartao/obter/{id}")
 	CartaoDTO obterCartaoPorId(@PathVariable Long id);
 }
