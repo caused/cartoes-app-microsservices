@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import br.com.mastertech.cartao.dto.ClienteDTO;
 
-@FeignClient(name = "cliente-service")
+@FeignClient(name = "cliente-service", fallback = ClienteFallback.class)
 public interface ClienteClient {
 
 	@GetMapping("/cliente/{id}")
