@@ -81,5 +81,18 @@ public class CartaoService {
 			return optional.get();
 		}
 	}
+	
+	public void desativarCartao(Long cartaoId) throws CartaoNaoExisteException {
+		Optional<CartaoEntity> optional = cartaoRepository.findById(cartaoId);
+		
+		if(!optional.isPresent()) {
+			throw new CartaoNaoExisteException("Este cartão não existe");
+		}else {
+			CartaoEntity entity = optional.get();
+			entity.setAtivo(Boolean.FALSE);
+			
+			cartaoRepository.save(entity);
+		}
+	}
 
 }

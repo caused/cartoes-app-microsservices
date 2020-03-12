@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.mastertech.fatura.dto.CartaoDesativadoDTO;
 import br.com.mastertech.fatura.dto.FaturaDTO;
 import br.com.mastertech.fatura.dto.PagamentoDTO;
+import br.com.mastertech.fatura.exception.CartaoNaoExisteException;
 import br.com.mastertech.fatura.exception.CartaoNaoPertenceException;
 import br.com.mastertech.fatura.exception.ClienteNaoEncontradoException;
 import br.com.mastertech.fatura.exception.FaturaInexistenteException;
@@ -26,14 +28,21 @@ public class FaturaController {
 	}
 
 	@GetMapping("/{cliente-id}/{cartao-id}")
-	public List<PagamentoDTO> obterFatura (@PathVariable(value = "cliente-id") Long clienteId, @PathVariable(value="cartao-id") Long cartaoId) throws ClienteNaoEncontradoException, CartaoNaoPertenceException{
+	public List<PagamentoDTO> obterFatura (@PathVariable(value = "cliente-id") Long clienteId, @PathVariable(value="cartao-id") Long cartaoId) throws ClienteNaoEncontradoException, CartaoNaoPertenceException, CartaoNaoExisteException{
 		return service.obterPagamentosDeUmCartao(clienteId, cartaoId);
 	}
 	
-	@PostMapping("/{cliente-id}/{cartao-id}")
-	public FaturaDTO pagarFatura (@PathVariable(value = "cliente-id") Long clienteId, @PathVariable(value="cartao-id") Long cartaoId) throws ClienteNaoEncontradoException, CartaoNaoPertenceException, FaturaInexistenteException{
+	@PostMapping("/{cliente-id}/{cartao-id}/pagar")
+	public FaturaDTO pagarFatura (@PathVariable(value = "cliente-id") Long clienteId, @PathVariable(value="cartao-id") Long cartaoId) throws ClienteNaoEncontradoException, CartaoNaoPertenceException, FaturaInexistenteException, CartaoNaoExisteException{
 		return service.pagarFatura(clienteId, cartaoId);
 	}
+	
+	@PostMapping("/{cliente-id}/{cartao-id}/expirar")
+	public CartaoDesativadoDTO bloquearCartao (@PathVariable(value = "cliente-id") Long clienteId, @PathVariable(value="cartao-id") Long cartaoId) throws ClienteNaoEncontradoException, CartaoNaoPertenceException, FaturaInexistenteException, CartaoNaoExisteException{
+		return service.desativarCartao(clienteId, cartaoId);
+	}
+	
+	
 	
 	
 }

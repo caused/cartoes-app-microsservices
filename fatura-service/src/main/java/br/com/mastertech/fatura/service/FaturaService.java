@@ -8,9 +8,11 @@ import br.com.mastertech.fatura.client.CartaoClient;
 import br.com.mastertech.fatura.client.ClienteClient;
 import br.com.mastertech.fatura.client.PagamentoClient;
 import br.com.mastertech.fatura.dto.CartaoDTO;
+import br.com.mastertech.fatura.dto.CartaoDesativadoDTO;
 import br.com.mastertech.fatura.dto.ClienteDTO;
 import br.com.mastertech.fatura.dto.FaturaDTO;
 import br.com.mastertech.fatura.dto.PagamentoDTO;
+import br.com.mastertech.fatura.exception.CartaoNaoExisteException;
 import br.com.mastertech.fatura.exception.CartaoNaoPertenceException;
 import br.com.mastertech.fatura.exception.ClienteNaoEncontradoException;
 import br.com.mastertech.fatura.exception.FaturaInexistenteException;
@@ -29,7 +31,7 @@ public class FaturaService {
 		this.pagamentoClient = pagamentoClient;
 	}
 
-	public List<PagamentoDTO> obterPagamentosDeUmCartao(Long clienteId, Long cartaoId) throws ClienteNaoEncontradoException, CartaoNaoPertenceException{
+	public List<PagamentoDTO> obterPagamentosDeUmCartao(Long clienteId, Long cartaoId) throws ClienteNaoEncontradoException, CartaoNaoPertenceException, CartaoNaoExisteException{
 
 		ClienteDTO cliente = validarCliente(clienteId);
 		CartaoDTO cartao = validarCartao(cartaoId);
@@ -40,7 +42,7 @@ public class FaturaService {
 
 	}
 
-	public FaturaDTO pagarFatura(Long clienteId, Long cartaoId) throws ClienteNaoEncontradoException, CartaoNaoPertenceException, FaturaInexistenteException{
+	public FaturaDTO pagarFatura(Long clienteId, Long cartaoId) throws ClienteNaoEncontradoException, CartaoNaoPertenceException, FaturaInexistenteException, CartaoNaoExisteException{
 		ClienteDTO cliente = validarCliente(clienteId);
 		CartaoDTO cartao = validarCartao(cartaoId);
 
@@ -52,6 +54,20 @@ public class FaturaService {
 			throw new FaturaInexistenteException("Fatura já foi paga ou não existe");
 		}		
 	}
+	
+	public CartaoDesativadoDTO desativarCartao(Long clienteId, Long cartaoId) throws ClienteNaoEncontradoException, CartaoNaoPertenceException, FaturaInexistenteException, CartaoNaoExisteException{
+		ClienteDTO cliente = validarCliente(clienteId);
+		CartaoDTO cartao = validarCartao(cartaoId);
+
+		verficaSeCartaoPertenceACliente(cliente, cartao);
+
+		try{
+			return cartaoClient.desativarCartao(cartaoId);
+		}catch(FeignException.FeignClientException.BadRequest e) {
+			throw new CartaoNaoExisteException("Este cartão não existe");
+		}
+		
+	}
 
 	private void verficaSeCartaoPertenceACliente(ClienteDTO cliente, CartaoDTO cartao)
 			throws CartaoNaoPertenceException {
@@ -60,12 +76,12 @@ public class FaturaService {
 		}
 	}
 
-	private CartaoDTO validarCartao(Long cartaoId) throws ClienteNaoEncontradoException {
+	private CartaoDTO validarCartao(Long cartaoId) throws CartaoNaoExisteException {
 		CartaoDTO cartao = null;
 		try {
 			cartao = cartaoClient.obterCartaoPorId(cartaoId);
 		}catch(FeignException.FeignClientException.BadRequest e) {
-			throw new ClienteNaoEncontradoException("Cartão não encontrado");
+			throw new CartaoNaoExisteException("Cartão não encontrado");
 		}
 		return cartao;
 	}

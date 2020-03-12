@@ -9,5 +9,5 @@ public interface CartaoRepository extends JpaRepository<CartaoEntity, Long>{
 	
 	@Nullable
 	public CartaoEntity findByNumero (String numero);
-
+	
 }

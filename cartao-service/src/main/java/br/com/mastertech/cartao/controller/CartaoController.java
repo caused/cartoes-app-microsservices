@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.mastertech.cartao.converter.CartaoConverter;
 import br.com.mastertech.cartao.dto.AtivarCartaoDTO;
 import br.com.mastertech.cartao.dto.CartaoDTO;
+import br.com.mastertech.cartao.dto.CartaoDesativadoDTO;
 import br.com.mastertech.cartao.entity.CartaoEntity;
 import br.com.mastertech.cartao.exception.CartaoExistenteException;
 import br.com.mastertech.cartao.exception.CartaoNaoExisteException;
@@ -61,6 +62,13 @@ public class CartaoController {
 		CartaoEntity cartaoEntity = this.service.obterPorId(id);
 		
 		return ResponseEntity.ok(converter.convertFromEntityToDto(cartaoEntity));
+	}
+	
+	@PostMapping("/desativar/{cartaoId}")
+	public ResponseEntity<CartaoDesativadoDTO> desativarCartao (@PathVariable Long cartaoId) throws CartaoNaoExisteException {
+		this.service.desativarCartao(cartaoId);
+		
+		return ResponseEntity.ok(new CartaoDesativadoDTO("ok"));
 	}
 	
 }
