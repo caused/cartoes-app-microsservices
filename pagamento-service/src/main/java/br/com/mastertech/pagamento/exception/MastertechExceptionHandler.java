@@ -59,17 +59,7 @@ public class MastertechExceptionHandler extends ResponseEntityExceptionHandler{
 		
 		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
-	
-	@ExceptionHandler({CartaoExistenteException.class})
-	public ResponseEntity<Object> handleEmptyResultDataAccessException(CartaoExistenteException ex, WebRequest request){
-		
-		List<Error> erros = new ArrayList<Error>();
-		
-		erros.add(new Error(ex.getMensagem()));
-		
-		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
-	}
-	
+
 	@ExceptionHandler({CartaoInativoException.class})
 	public ResponseEntity<Object> handleEmptyResultDataAccessException(CartaoInativoException ex, WebRequest request){
 		

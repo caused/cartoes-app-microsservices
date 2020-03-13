@@ -15,7 +15,6 @@ import br.com.mastertech.pagamento.exception.CartaoInativoException;
 import br.com.mastertech.pagamento.exception.CartaoNaoExisteException;
 import br.com.mastertech.pagamento.exception.PagamentoInexistenteException;
 import br.com.mastertech.pagamento.repository.PagamentoRepository;
-import feign.FeignException;
 
 @Service
 public class PagamentoService {
@@ -29,12 +28,8 @@ public class PagamentoService {
 	}
 
 	public PagamentoEntity criarPagamento (PagamentoEntity pagamento) throws CartaoNaoExisteException, CartaoInativoException {
-		CartaoDTO cartaoDTO = null;
-		try {
-			cartaoDTO = client.obterCartaoPorId(pagamento.getCartaoId());
-		}catch(FeignException.FeignServerException.BadRequest e) {
-			throw new CartaoNaoExisteException("Escolha um cartão existente");
-		}
+		CartaoDTO cartaoDTO = client.obterCartaoPorId(pagamento.getCartaoId());
+		
 		if(!cartaoDTO.getAtivo()) {
 			throw new CartaoInativoException("Favor escolher um cartão ativo");
 		}

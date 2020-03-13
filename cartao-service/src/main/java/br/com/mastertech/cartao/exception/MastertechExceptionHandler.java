@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import feign.FeignException;
-
 @ControllerAdvice
 public class MastertechExceptionHandler extends ResponseEntityExceptionHandler{
 
@@ -58,7 +56,7 @@ public class MastertechExceptionHandler extends ResponseEntityExceptionHandler{
 		
 		erros.add(new Error(ex.getMensagem()));
 		
-		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
 	}
 	
 	@ExceptionHandler({CartaoExistenteException.class})
@@ -71,12 +69,14 @@ public class MastertechExceptionHandler extends ResponseEntityExceptionHandler{
 		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
 	
-	@ExceptionHandler({FeignException.NotFound.class})
-	public ResponseEntity<Object> handleEmptyResultDataAccessException(FeignException.NotFound ex, WebRequest request){
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+	@ExceptionHandler({CartaoInativoException.class})
+	public ResponseEntity<Object> handleEmptyResultDataAccessException(CartaoInativoException ex, WebRequest request){
 		
-		return handleExceptionInternal(ex, ex.contentUTF8(), headers, HttpStatus.BAD_REQUEST, request);
+		List<Error> erros = new ArrayList<Error>();
+		
+		erros.add(new Error(ex.getMensagem()));
+		
+		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
 	
 	private List<Error> getErrorList(BindingResult bindingResult){

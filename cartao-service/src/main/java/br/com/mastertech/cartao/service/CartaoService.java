@@ -27,12 +27,7 @@ public class CartaoService {
 	}
 
 	public CartaoEntity criarCartao(CartaoEntity cartao) throws CartaoExistenteException, ClienteNaoEncontradoException{
-		ClienteDTO clienteDTO = null;
-		try {
-			clienteDTO = client.getClienteById(cartao.getClienteId());
-		}catch (FeignException.FeignClientException.NotFound e) {
-			throw new ClienteNaoEncontradoException("Favor escolher um cliente existente");
-		}
+		ClienteDTO clienteDTO = client.getClienteById(cartao.getClienteId());
 		
 		cartao.setCliente(clienteDTO.getId());
 		cartao.setAtivo(Boolean.FALSE);
